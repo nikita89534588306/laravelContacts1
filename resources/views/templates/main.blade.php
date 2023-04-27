@@ -12,5 +12,6 @@
     <div class="container">
         @yield('content')
     </div>
+    @yield('sctipts')
 </body>
 </html>

@@ -46,7 +46,7 @@ class ContactController extends Controller
         ];
 
         $phonesNumberPerson = [];
-        foreach($req as $numberPhone) array_push($phonesNumberPerson, ['number' => $numberPhone]);
+        foreach($req as $numberPhone) if($numberPhone !== null) array_push($phonesNumberPerson, ['number' => $numberPhone]);
         
 
         Person::query()->create($dataPerson)

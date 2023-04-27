@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
 
             $table->foreignId('person_id')->references('id')->on('people')->onDelete('cascade');
-            $table->string('number', 50)->nullable(false);
+            $table->string('number', 50)->nullable(true);
             
             $table->timestamps();
         });
