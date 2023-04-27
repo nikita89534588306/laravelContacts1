@@ -37,7 +37,22 @@ class ContactController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $req = $request->collect();
+        $req->pull('_token');
+
+        $dataPerson = [
+            "name" => $req->pull('name'),
+            "surname" => $req->pull('surname')
+        ];
+
+        $phonesNumberPerson = [];
+        foreach($req as $numberPhone) array_push($phonesNumberPerson, ['number' => $numberPhone]);
+        
+
+        Person::query()->create($dataPerson)
+            ->phones()->createMany($phonesNumberPerson);
+            
+        return redirect()->route('contact.index');
     }
 
     /**
