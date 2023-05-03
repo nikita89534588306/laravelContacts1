@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Person;
+use App\Services\FormHendlers\NewContactFormHendler;
 use Illuminate\Http\Request;
 
 class ContactController extends Controller
@@ -35,22 +36,14 @@ class ContactController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(NewContactFormHendler $formHendler,Request $request)
     {
-        $req = $request->collect();
-        $req->pull('_token');
+        $rowDataPerson = $request->collect();
 
-        $dataPerson = [
-            "name" => $req->pull('name'),
-            "surname" => $req->pull('surname')
-        ];
+        $dataContact = $formHendler->prepareContactData($rowDataPerson);
 
-        $phonesNumberPerson = [];
-        foreach($req as $numberPhone) if($numberPhone !== null) array_push($phonesNumberPerson, ['number' => $numberPhone]);
-        
-
-        Person::query()->create($dataPerson)
-            ->phones()->createMany($phonesNumberPerson);
+        Person::query()->create($dataContact['fullName'])
+            ->phones()->createMany($dataContact['phones']);
             
         return redirect()->route('contact.index');
     }
