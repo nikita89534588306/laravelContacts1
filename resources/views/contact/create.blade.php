@@ -36,25 +36,32 @@
 @endsection
 
 @section('sctipts')
-<script src="/js/test.js"></script>
+
 <script>
+
     var phonesInput = document.querySelector('.phones_input');
     var phoneInput = phonesInput.lastElementChild;
 
     var maskForPhoneNumber = [
             {  mask: '0 (000) 000-00-00', startsWith: '8' },
             {  mask: '+0 (000) 000-00-00', startsWith: '7' },
-            {  mask: '*0 (000) 000-00-00', startsWith: '+' },
-            {  mask: '(000) 000-00-00', startsWith: '' },
+            {  mask: '+0 (000) 000-00-00', startsWith: '+' },
+            {  mask: '(000) 000-00-00', startsWith: '12345690' },
     ]
+
     function funcSelectMask(appended, dynamicMasked) {
-        var number = (dynamicMasked.value + appended).replace(/\s/g,'');
+        var number = (dynamicMasked.value + appended).replace(/[\(\s]/g,'');
 
         return dynamicMasked.compiledMasks.find(function (m) {
-            return number.indexOf(m.startsWith) === 0;
+           
+            for (let rule of m.startsWith) 
+                if(number.indexOf(rule) === 0) return true
+
+            return false;
+            
         });
     }
-    phonesInput.mask = IMask(phoneInput, {
+    phoneInput.mask = IMask(phoneInput, {
         mask: maskForPhoneNumber,
         dispatch: funcSelectMask
     })
@@ -73,7 +80,7 @@
             newInputPhone.classList.add("form-control");
             newInputPhone.classList.add("mb-3");
 
-            newInputPhone.newMask = IMask(newInputPhone, {
+            newInputPhone.mask = IMask(newInputPhone, {
                 mask: maskForPhoneNumber,
                 dispatch: funcSelectMask
             })
@@ -87,8 +94,18 @@
 
         }    
     }
-    function deleteInput(){ if(this.value === '') { this.mask.destroy(); this.remove()};}
 
+    function deleteInput(){ 
+        var selectedInput = this;
+        for(let thisItem of phonesInput.children){ 
+            if(selectedInput!==thisItem && (selectedInput.value==='' && thisItem.value=='')) { 
+                thisItem.mask.destroy(); 
+                thisItem.remove(); 
+                this.addEventListener('input', createInput); 
+                break;
+            }}
+    }
+    
     phoneInput.addEventListener('input', createInput)
 
 
